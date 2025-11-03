@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InvoGen - Professional Invoice Generator</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'invoices/css/index.css' %}">
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <a href="#" class="logo">
+            <span class="logo-icon">📄</span>
+            InvoGen
+        </a>
+        
+        <button class="mobile-menu-btn">☰</button>
+        
+        <nav>
+            <a href="#features">Features</a>
+            <a href="#pricing">Pricing</a>
+            <a href="#templates">Templates</a>
+            <a href="#" id="started-btn">Get Started</a>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1 class="hero-title">Create Professional Invoices in Seconds</h1>
+            <p class="hero-subtitle">
+                Streamline your billing process with our powerful invoice generator. 
+                Perfect for freelancers, small businesses, and entrepreneurs looking 
+                to save time and get paid faster.
+            </p>
+            <div class="hero-buttons">
+                <a href="#pricing" class="btn btn-primary">Get Started Free</a>
+                <a href="#features" class="btn btn-secondary">Learn More</a>
+            </div>
+        </div>
+        <div class="hero-visual">
+            <div class="invoice-preview">
+                <div class="preview-header">
+                    <div class="preview-logo">Your Business</div>
+                    <div class="invoice-number">INV-2024-001</div>
+                </div>
+                <table class="preview-table">
+                    <thead>
+                        <tr>
+                            <th>Description</th>
+                            <th>Qty</th>
+                            <th>Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Web Design Services</td>
+                            <td>1</td>
+                            <td>$1,200.00</td>
+                        </tr>
+                        <tr>
+                            <td>Domain & Hosting</td>
+                            <td>1</td>
+                            <td>$150.00</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="preview-total">
+                    Total: $1,350.00
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features" id="features">
+        <h2 class="section-title">Everything You Need</h2>
+        <p class="section-subtitle">
+            Powerful features designed to make invoicing simple, fast, and professional.
+        </p>
+        
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">⚡</div>
+                <h3 class="feature-title">Lightning Fast</h3>
+                <p class="feature-description">
+                    Create and send professional invoices in under 60 seconds. 
+                    No complicated setup required.
+                </p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">🎨</div>
+                <h3 class="feature-title">Beautiful Templates</h3>
+                <p class="feature-description">
+                    Choose from multiple professionally designed templates 
+                    that match your brand identity.
+                </p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">📊</div>
+                <h3 class="feature-title">Smart Analytics</h3>
+                <p class="feature-description">
+                    Track your revenue, monitor unpaid invoices, and get 
+                    insights into your business performance.
+                </p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">🔒</div>
+                <h3 class="feature-title">Secure & Reliable</h3>
+                <p class="feature-description">
+                    Your data is safe with us. Enterprise-grade security 
+                    and 99.9% uptime guarantee.
+                </p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">📱</div>
+                <h3 class="feature-title">Mobile Friendly</h3>
+                <p class="feature-description">
+                    Create and manage invoices on the go with our 
+                    fully responsive design.
+                </p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">💸</div>
+                <h3 class="feature-title">Get Paid Faster</h3>
+                <p class="feature-description">
+                    Automatic reminders and online payment options 
+                    help you get paid quicker.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section class="pricing" id="pricing">
+        <h2 class="section-title">Simple, Transparent Pricing</h2>
+        <p class="section-subtitle">
+            Choose the plan that works best for your business. All plans include core features.
+        </p>
+        
+        <div class="pricing-grid">
+            <!-- Free Plan -->
+            <div class="pricing-card">
+                <div class="pricing-icon">🎯</div>
+                <h3 class="pricing-title">Starter</h3>
+                <p class="pricing-description">Perfect for freelancers and solo entrepreneurs</p>
+                
+                <div class="price">$0</div>
+                <div class="price-period">forever</div>
+                
+                <ul class="price-features">
+                    <li>5 invoices per month</li>
+                    <li>Basic templates</li>
+                    <li>Customer management</li>
+                    <li>PDF download</li>
+                    <li>Email support</li>
+                </ul>
+                
+                <a href="#" class="price-button outline">Get Started Free</a>
+            </div>
+
+            <!-- Pro Plan - Popular -->
+            <div class="pricing-card popular">
+                <div class="popular-badge">Most Popular</div>
+                <div class="pricing-icon">🚀</div>
+                <h3 class="pricing-title">Professional</h3>
+                <p class="pricing-description">Ideal for growing businesses and agencies</p>
+                
+                <div class="price">$19</div>
+                <div class="price-period">per month</div>
+                
+                <ul class="price-features">
+                    <li>Unlimited invoices</li>
+                    <li>All premium templates</li>
+                    <li>Advanced analytics</li>
+                    <li>Custom branding</li>
+                    <li>Auto-reminders</li>
+                    <li>Priority support</li>
+                    <li>Team collaboration</li>
+                </ul>
+                
+                <a href="#" class="price-button">Start Free Trial</a>
+            </div>
+
+            <!-- Business Plan -->
+            <div class="pricing-card">
+                <div class="pricing-icon">🏢</div>
+                <h3 class="pricing-title">Business</h3>
+                <p class="pricing-description">For established businesses with teams</p>
+                
+                <div class="price">$49</div>
+                <div class="price-period">per month</div>
+                
+                <ul class="price-features">
+                    <li>Everything in Pro</li>
+                    <li>Multi-user access</li>
+                    <li>Advanced reporting</li>
+                    <li>API access</li>
+                    <li>Custom workflows</li>
+                    <li>White-label options</li>
+                    <li>Dedicated account manager</li>
+                </ul>
+                
+                <a href="#" class="price-button outline">Contact Sales</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta">
+        <h2 class="cta-title">Ready to Simplify Your Invoicing?</h2>
+        <p class="cta-subtitle">
+            Join thousands of businesses that trust InvoGen for their billing needs. 
+            Start free today - no credit card required.
+        </p>
+        <a href="#pricing" class="cta-button">Start Free Trial</a>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-column">
+                <h3>InvoGen</h3>
+                <p style="color: #9ca3af;">
+                    The modern invoice generator for modern businesses. 
+                    Simple, powerful, and reliable.
+                </p>
+            </div>
+            
+            <div class="footer-column">
+                <h3>Product</h3>
+                <ul class="footer-links">
+                    <li><a href="#features">Features</a></li>
+                    <li><a href="#pricing">Pricing</a></li>
+                    <li><a href="#templates">Templates</a></li>
+                    <li><a href="#">API</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-column">
+                <h3>Resources</h3>
+                <ul class="footer-links">
+                    <li><a href="#">Documentation</a></li>
+                    <li><a href="#">Help Center</a></li>
+                    <li><a href="#">Blog</a></li>
+                    <li><a href="#">Community</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-column">
+                <h3>Company</h3>
+                <ul class="footer-links">
+                    <li><a href="#">About Us</a></li>
+                    <li><a href="#">Careers</a></li>
+                    <li><a href="#">Contact</a></li>
+                    <li><a href="#">Privacy Policy</a></li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="footer-bottom">
+            <p>&copy; 2024 InvoGen. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="{% static 'invoices/js/index.js' %}">
+        
+</script>
+</body>
+</html>
