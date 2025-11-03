@@ -3,13 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Invoice Generator</title>
 
     {% load static %}
 
     <link href="{% static 'users/css/auth.css' %}" rel="stylesheet">
 </head>
 <body>
-    <h1>Auth Page Under development</h1>
+    <main>
+        <div class="card">
+            <h2>Register</h2>
+            <form method="post">
+                {% csrf_token %}
+                <div class="form-group">
+                    {% csrf_token %}
+                    <input type="email" name="email" placeholder="Email">
+                    <input type="text" name="fullname" placeholder="Full Name">
+                    <input type="text" name="company_name" placeholder="Company Name">
+                    <input type="password" name="password" placeholder="Password">
+                    <input type="password" name="conf_password" placeholder="Confirm Password">    
+                </div>
+                <button class="btn">Sign Up</button>
+                {% for message in messages %}
+                    <p class="message">{{ message }}</p>
+                {% endfor %}
+                <p>Already have account?</p>
+                <a href="">Log in</a>
+            </form>
+        </div>
+    </main>
 </body>
 </html>
