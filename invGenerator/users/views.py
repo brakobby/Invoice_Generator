@@ -8,8 +8,8 @@ from django.contrib.auth.hashers import make_password, check_password
     # Register
 def Registration(request):
     if request.method == "POST":
-        firstname = request.POST.get['firstname']
-        lastname = request.POST.get['lastname']
+        first_name = request.POST.get['first_name']
+        last_name = request.POST.get['last_name']
         email = request.POST.get['email']
         company_name = request.POST.get['company_name']
         password = request.POST.get['password']
@@ -23,7 +23,7 @@ def Registration(request):
 
         # checking if you have filled all fields
 
-        if not (firstname and lastname and email and company_name and password and conf_password):
+        if not (first_name and last_name and email and company_name and password and conf_password):
             messages.error(request,"Please fill all fields before submission")
 
         hashed_password = make_password(password)
@@ -32,8 +32,8 @@ def Registration(request):
 
         UserAccount = InvGen.objects.create(
             email = email,
-            firstname = firstname,
-            lastname = lastname,
+            first_name = first_name,
+            last_name = last_name,
             company_name = company_name,
             password = hashed_password,
         )
@@ -57,7 +57,7 @@ def Login(request):
             # Making sure the password matches
 
             if check_password(password, userAccount.password):
-                messages.success(request,f"Welcome {userAccount.firstname}.")
+                messages.success(request,f"Welcome {userAccount.first_name}.")
                 return render(request, 'users/login.html', {'user' : userAccount})
 
             else:
