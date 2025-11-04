@@ -1,11 +1,13 @@
 from . import views
 from django.urls import path
-<<<<<<< HEAD
-
 
 urlpatterns = [
     path('',views.renderPage, name='home'),
-    path('invoice/',views.dashBoardView, name="dashboard")
+    path('dashboard/',views.dashBoardView, name="dashboard"),
+    path('invoice/', views.invoice_portal, name='invoice'),
+    path('new_invoice/', views.newInvoice, name='new_invoice'),
+    path('customer/', views.customer, name='customer'),
+    path('report/', views.reports, name='report'),
+    path('setting/', views.settings, name='setting')
 ]
-=======
->>>>>>> 1ff123c3d6762302520b26064624d267df988531
+

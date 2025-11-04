@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reports – InvoGen Pro</title>
+
+  <!-- Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <!-- Inter -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- ApexCharts -->
+  <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+
+  <style>
+    :root{
+      --bg:#f9fafb;--card:#ffffff;--text:#1f2937;--text-muted:#6b7280;
+      --primary:#3b82f6;--primary-dark:#1d4ed8;--primary-light:#dbeafe;
+      --success:#10b981;--warning:#f59e0b;--danger:#ef4444;--border:#e5e7eb;
+      --shadow-sm:0 1px 2px rgba(0,0,0,.05);--shadow:0 4px 6px -1px rgba(0,0,0,.1);
+      --shadow-lg:0 10px 25px -3px rgba(0,0,0,.1);--radius:12px;--radius-sm:8px;
+      --transition:all .2s ease;
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);line-height:1.6;font-size:15px;}
+    a{color:inherit;text-decoration:none;}
+
+    .app{display:flex;min-height:100vh;}
+    .sidebar{width:280px;background:#111827;color:#fff;padding:1.5rem 0;position:fixed;height:100vh;overflow-y:auto;box-shadow:var(--shadow-lg);z-index:1000;transition:var(--transition);}
+    .logo{padding:0 1.5rem 1.5rem;border-bottom:1px solid #374151;margin-bottom:1.5rem;display:flex;align-items:center;gap:.75rem;}
+    .logo-icon{width:38px;height:38px;background:linear-gradient(135deg,var(--primary),var(--primary-dark));border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;}
+    .logo-text{font-size:1.4rem;font-weight:700;}
+    .nav-links{list-style:none;padding:0 1rem;}
+    .nav-links a{display:flex;align-items:center;gap:.75rem;padding:.75rem 1rem;color:#9ca3af;border-radius:var(--radius-sm);font-weight:500;transition:var(--transition);}
+    .nav-links a:hover,.nav-links a.active{background:rgba(59,130,246,.15);color:#fff;}
+    .nav-links i{width:20px;text-align:center;}
+    .sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:999;}
+    @media(max-width:768px){.sidebar{transform:translateX(-100%);}.sidebar.active{transform:translateX(0);}.sidebar.active~.sidebar-overlay{display:block;}}
+    
+    /* ---------- MAIN AREA ---------- */
+    .main{margin-left:280px;padding:1.5rem 2rem;transition:var(--transition);width:100%;max-width:none;}
+    @media(max-width:768px){.main{margin-left:0;padding:1rem;}}
+    .inner{max-width:1600px;margin:0 auto;width:100%;}   /* optional max‑width */
+    
+    .mobile-header{display:none;background:#fff;padding:1rem 1.5rem;box-shadow:var(--shadow-sm);align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10;}
+    @media(max-width:768px){.mobile-header{display:flex;}}
+    .mobile-menu-btn{background:none;border:none;font-size:1.5rem;color:var(--text);cursor:pointer;}
+
+    .page-title{font-size:1.75rem;font-weight:700;margin-bottom:1.5rem;display:flex;align-items:center;gap:.5rem;}
+    .page-actions{display:flex;gap:.75rem;align-items:center;flex-wrap:wrap;}
+
+    /* KPI Cards */
+    .kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1.5rem;margin-bottom:2rem;width:100%;}
+    .kpi-card{background:var(--card);border-radius:var(--radius);padding:1.5rem;box-shadow:var(--shadow);border:1px solid var(--border);position:relative;overflow:hidden;width:100%;}
+    .kpi-card::before{content:'';position:absolute;top:0;left:0;width:100%;height:4px;background:linear-gradient(90deg,var(--primary),var(--primary-dark));}
+    .kpi-icon{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.5rem;margin-bottom:.75rem;}
+    .kpi-primary{background:var(--primary-light);color:var(--primary);}
+    .kpi-success{background:#d1fae5;color:var(--success);}
+    .kpi-warning{background:#fef3c7;color:var(--warning);}
+    .kpi-danger{background:#fee2e2;color:var(--danger);}
+    .kpi-value{font-size:1.75rem;font-weight:700;margin:.25rem 0;}
+    .kpi-label{font-size:.875rem;color:var(--text-muted);}
+    .kpi-trend{font-size:.75rem;display:flex;align-items:center;gap:.25rem;margin-top:.25rem;}
+    .kpi-trend.up{color:var(--success);}
+    .kpi-trend.down{color:var(--danger);}
+
+    /* Filters */
+    .filter-bar{display:flex;gap:.75rem;flex-wrap:wrap;margin-bottom:1.5rem;align-items:center;width:100%;}
+    .filter-select,.filter-date{padding:.6rem 1rem;border:1.5px solid var(--border);border-radius:var(--radius-sm);background:#fff;font-size:.875rem;color:var(--text);cursor:pointer;transition:var(--transition);flex:1 1 180px;}
+    .filter-select:focus,.filter-date:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(59,130,246,.15);}
+    .btn{padding:.75rem 1.5rem;border:none;border-radius:var(--radius-sm);font-weight:600;font-size:.9rem;cursor:pointer;display:inline-flex;align-items:center;gap:.5rem;transition:var(--transition);}
+    .btn-primary{background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:#fff;}
+    .btn-primary:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(59,130,246,.3);}
+    .btn-outline{background:transparent;color:var(--primary);border:1.5px solid var(--primary);}
+    .btn-outline:hover{background:var(--primary-light);}
+
+    /* Charts */
+    .chart-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:2rem;width:100%;}
+    @media(max-width:992px){.chart-grid{grid-template-columns:1fr;}}
+    .chart-card{background:var(--card);border-radius:var(--radius);padding:1.5rem;box-shadow:var(--shadow);border:1px solid var(--border);width:100%;}
+    .chart-title{font-size:1.1rem;font-weight:600;margin-bottom:1rem;display:flex;align-items:center;gap:.5rem;}
+    .chart-wrapper{position:relative;height:300px;width:100%;}
+
+    /* Table */
+    .table-wrapper{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;border:1px solid var(--border);width:100%;}
+    .report-table{width:100%;border-collapse:collapse;}
+    .report-table th{background:#f1f5f9;padding:1rem 1.5rem;text-align:left;font-weight:600;color:var(--text-muted);font-size:.8rem;text-transform:uppercase;letter-spacing:.05em;}
+    .report-table td{padding:1rem 1.5rem;border-bottom:1px solid var(--border);}
+    .report-table tr:hover td{background:#f8fafc;}
+    .status-badge{display:inline-flex;align-items:center;gap:.4rem;padding:.4rem .75rem;border-radius:20px;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;}
+    .status-paid{background:#d1fae5;color:#065f46;}
+    .status-sent{background:var(--primary-light);color:var(--primary-dark);}
+    .status-overdue{background:#fee2e2;color:#991b1b;}
+    .status-draft{background:#e5e7eb;color:#4b5563;}
+
+    /* Toast & Loader */
+    .toast{position:fixed;top:1.5rem;right:1.5rem;background:#fff;border-radius:var(--radius);box-shadow:var(--shadow-lg);padding:1rem 1.25rem;display:flex;align-items:center;gap:.75rem;z-index:3000;transform:translateX(400px);transition:transform .3s ease;border-left:4px solid var(--success);max-width:320px;}
+    .toast.show{transform:translateX(0);}
+    .toast.success{border-left-color:var(--success);}
+    .toast.error{border-left-color:var(--danger);}
+    .toast-icon{font-size:1.1rem;}
+    .toast-message{font-weight:500;font-size:.9rem;}
+    .close-toast{background:none;border:none;font-size:1.1rem;cursor:pointer;color:var(--text-muted);margin-left:auto;}
+    .loader{position:absolute;inset:0;background:rgba(255,255,255,.8);display:flex;align-items:center;justify-content:center;z-index:10;}
+    .spinner{width:32px;height:32px;border:4px solid var(--primary-light);border-top:4px solid var(--primary);border-radius:50%;animation:spin 1s linear infinite;}
+    @keyframes spin{to{transform:rotate(360deg);}}
+
+    /* Dark mode */
+    body.dark{--bg:#111827;--card:#1f2937;--text:#f9fafb;--text-muted:#9ca3af;--border:#374151;}
+    .dark .kpi-card,.dark .chart-card,.dark .table-wrapper{background:var(--card);border-color:var(--border);}
+    .dark .report-table th{background:#374151;color:#d1d5db;}
+    .dark .report-table td{border-bottom-color:var(--border);}
+    .dark .report-table tr:hover td{background:#374151;}
+  </style>
+</head>
+<body>
+
+<div class="app">
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <div class="logo"><div class="logo-icon"><i class="fas fa-file-invoice"></i></div><div class="logo-text">InvoGen</div></div>
+    <ul class="nav-links">
+      <li><a href="{% url 'dashboard' %}"><i class="fas fa-chart-bar"></i> Dashboard</a></li>
+      <li><a href="{% url 'invoice' %}"><i class="fas fa-receipt"></i> Invoices</a></li>
+      <li><a href="{% url 'customer' %}"><i class="fas fa-users"></i> Customers</a></li>
+      <li><a href="{% url 'report' %}" class="active"><i class="fas fa-chart-line"></i> Reports</a></li>
+      <li><a href="{% url 'setting' %}"><i class="fas fa-cog"></i> Settings</a></li>
+    </ul>
+  </aside>
+  <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+  <!-- Main -->
+  <main class="main">
+    <div class="inner">   <!-- optional max‑width wrapper -->
+      <header class="mobile-header">
+        <button class="mobile-menu-btn" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+        <h1 class="page-title">Reports</h1>
+        <div></div>
+      </header>
+
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;">
+        <h1 class="page-title"><i class="fas fa-chart-line"></i> Reports & Analytics</h1>
+        <div class="page-actions">
+          <button class="btn btn-outline" onclick="exportCSV()"><i class="fas fa-file-csv"></i> CSV</button>
+          <button class="btn btn-outline" onclick="exportPDF()"><i class="fas fa-file-pdf"></i> PDF</button>
+          <button class="btn btn-primary" onclick="toggleDarkMode()"><i class="fas fa-moon"></i> Dark</button>
+        </div>
+      </div>
+
+      <!-- KPI Cards -->
+      <div class="kpi-grid">
+        <div class="kpi-card">
+          <div class="kpi-icon kpi-primary"><i class="fas fa-dollar-sign"></i></div>
+          <div class="kpi-value">$48,574</div>
+          <div class="kpi-label">Total Revenue</div>
+          <div class="kpi-trend up"><i class="fas fa-arrow-up"></i> +12.5%</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-icon kpi-success"><i class="fas fa-check-circle"></i></div>
+          <div class="kpi-value">142</div>
+          <div class="kpi-label">Paid Invoices</div>
+          <div class="kpi-trend up"><i class="fas fa-arrow-up"></i> +4.3%</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-icon kpi-warning"><i class="fas fa-clock"></i></div>
+          <div class="kpi-value">18</div>
+          <div class="kpi-label">Overdue</div>
+          <div class="kpi-trend down"><i class="fas fa-arrow-down"></i> -2</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-icon kpi-danger"><i class="fas fa-exclamation-triangle"></i></div>
+          <div class="kpi-value">$6,820</div>
+          <div class="kpi-label">Outstanding</div>
+          <div class="kpi-trend down"><i class="fas fa-arrow-down"></i> -8.1%</div>
+        </div>
+      </div>
+
+      <!-- Filters -->
+      <div class="filter-bar">
+        <select class="filter-select" id="timeRange">
+          <option value="7">Last 7 days</option>
+          <option value="30" selected>Last 30 days</option>
+          <option value="90">Last 90 days</option>
+          <option value="365">Last Year</option>
+        </select>
+        <input type="date" class="filter-date" id="startDate">
+        <input type="date" class="filter-date" id="endDate">
+        <button class="btn btn-primary" onclick="applyFilters()"><i class="fas fa-filter"></i> Apply</button>
+      </div>
+
+      <!-- Charts -->
+      <div class="chart-grid">
+        <div class="chart-card">
+          <h3 class="chart-title"><i class="fas fa-chart-area"></i> Revenue Trend</h3>
+          <div class="chart-wrapper" id="revenueChart"></div>
+        </div>
+        <div class="chart-card">
+          <h3 class="chart-title"><i class="fas fa-chart-pie"></i> Invoice Status</h3>
+          <div class="chart-wrapper" id="statusChart"></div>
+        </div>
+      </div>
+
+      <!-- Recent Invoices Table -->
+      <div class="chart-card">
+        <h3 class="chart-title"><i class="fas fa-receipt"></i> Recent Invoices</h3>
+        <div class="table-wrapper">
+          <table class="report-table" id="recentTable">
+            <thead>
+              <tr>
+                <th>Invoice</th><th>Client</th><th>Date</th><th>Amount</th><th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Filled by JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"><div class="toast-icon"><i class="fas fa-check-circle"></i></div><div class="toast-message" id="toastMessage"></div><button class="close-toast" onclick="hideToast()">x</button></div>
+
+<script>
+/* ---------- Toast ---------- */
+function showToast(msg,type='success'){const t=document.getElementById('toast'),m=document.getElementById('toastMessage');m.textContent=msg;t.className=`toast ${type} show`;setTimeout(hideToast,4000);}
+function hideToast(){document.getElementById('toast').classList.remove('show');}
+
+/* ---------- Dark Mode ---------- */
+function toggleDarkMode(){document.body.classList.toggle('dark');localStorage.setItem('dark',document.body.classList.contains('dark'));}
+if(localStorage.getItem('dark')==='true') document.body.classList.add('dark');
+
+/* ---------- Data ---------- */
+const recentInvoices = [
+  {id:'INV-2025-048',client:'Acme Corp',date:'2025-03-28',amount:3250,status:'paid'},
+  {id:'INV-2025-047',client:'Beta LLC',date:'2025-03-25',amount:1875,status:'sent'},
+  {id:'INV-2025-046',client:'Gamma Inc',date:'2025-03-20',amount:4200,status:'overdue'},
+  {id:'INV-2025-045',client:'Delta Ltd',date:'2025-03-18',amount:2900,status:'paid'},
+  {id:'INV-2025-044',client:'Epsilon Co',date:'2025-03-15',amount:1100,status:'draft'}
+];
+
+/* ---------- Table ---------- */
+function renderTable(){const tbody=document.querySelector('#recentTable tbody');tbody.innerHTML='';recentInvoices.forEach(i=>{const tr=document.createElement('tr');tr.innerHTML=`<td>${i.id}</td><td>${i.client}</td><td>${new Date(i.date).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}</td><td>$${i.amount.toLocaleString()}</td><td><span class="status-badge status-${i.status}">${i.status}</span></td>`;tbody.appendChild(tr);});}
+
+/* ---------- ApexCharts ---------- */
+let revenueChart, statusChart;
+function initCharts(){
+  const revOpts = {
+    series:[{name:'Revenue',data:[12000,19000,15000,25000,22000,30000,28000]}],
+    chart:{type:'area',height:300,toolbar:{show:false},background:'transparent'},
+    colors:[getComputedStyle(document.documentElement).getPropertyValue('--primary')],
+    dataLabels:{enabled:false},
+    stroke:{curve:'smooth',width:3},
+    fill:{type:'gradient',gradient:{shadeIntensity:1,opacityFrom:0.7,opacityTo:0.3}},
+    xaxis:{categories:['Jan','Feb','Mar','Apr','May','Jun','Jul'],labels:{style:{colors:'#9ca3af'}}},
+    yaxis:{labels:{formatter:v=>'$'+v.toLocaleString(),style:{colors:'#9ca3af'}}},
+    tooltip:{theme:false}
+  };
+  revenueChart = new ApexCharts(document.querySelector('#revenueChart'),revOpts); revenueChart.render();
+
+  const statusOpts = {
+    series:[142,38,18,12],
+    chart:{type:'donut',height:300},
+    labels:['Paid','Sent','Overdue','Draft'],
+    colors:['#10b981','#3b82f6','#ef4444','#6b7280'],
+    legend:{position:'bottom',labels:{colors:'#9ca3af'}},
+    dataLabels:{enabled:false},
+    tooltip:{y:{formatter:v=>v+' invoices'}}
+  };
+  statusChart = new ApexCharts(document.querySelector('#statusChart'),statusOpts); statusChart.render();
+}
+
+/* ---------- Filters ---------- */
+function applyFilters(){
+  showToast('Filters applied – updating charts…','success');
+  const loader=document.createElement('div'); loader.className='loader';
+  loader.innerHTML='<div class="spinner"></div>'; document.body.appendChild(loader);
+  setTimeout(()=>{loader.remove(); revenueChart.updateSeries([{data:[13000,18000,17000,26000,21000,31000,29000]}]);},1200);
+}
+
+/* ---------- Export ---------- */
+function exportCSV(){
+  const csv = ['Invoice,Client,Date,Amount,Status',...recentInvoices.map(i=>`${i.id},${i.client},${i.date},${i.amount},${i.status}`)].join('\n');
+  const blob = new Blob([csv],{type:'text/csv'}); const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href=url; a.download='invoicen_report.csv'; a.click(); URL.revokeObjectURL(url);
+  showToast('CSV exported','success');
+}
+function exportPDF(){
+  showToast('PDF generation started…','success');
+}
+
+/* ---------- Sidebar ---------- */
+function toggleSidebar(){document.getElementById('sidebar').classList.toggle('active');}
+
+/* ---------- Init ---------- */
+document.addEventListener('DOMContentLoaded',()=>{renderTable();initCharts();showToast('Executive reports ready','success');});
+</script>
+</body>
+</html>

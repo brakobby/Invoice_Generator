@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Settings – InvoGen Pro</title>
+
+  <!-- Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <!-- Inter -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Pickr -->
+  <script src="https://cdn.jsdelivr.net/npm/@simonwep/pickr/dist/pickr.min.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@simonwep/pickr/dist/themes/nano.min.css"/>
+
+  <style>
+    :root{
+      --bg:#f9fafb;--card:#ffffff;--text:#1f2937;--text-muted:#6b7280;
+      --primary:#3b82f6;--primary-dark:#1d4ed8;--primary-light:#dbeafe;
+      --success:#10b981;--danger:#ef4444;--border:#e5e7eb;
+      --shadow-sm:0 1px 2px rgba(0,0,0,.05);--shadow:0 4px 6px -1px rgba(0,0,0,.1);
+      --shadow-lg:0 10px 25px -3px rgba(0,0,0,.1);--radius:12px;--radius-sm:8px;
+      --transition:all .2s ease;
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);line-height:1.6;font-size:15px;}
+    a{color:inherit;text-decoration:none;}
+
+    .app{display:flex;min-height:100vh;}
+    .sidebar{width:280px;background:#111827;color:#fff;padding:1.5rem 0;position:fixed;height:100vh;overflow-y:auto;box-shadow:var(--shadow-lg);z-index:1000;transition:var(--transition);}
+    .logo{padding:0 1.5rem 1.5rem;border-bottom:1px solid #374151;margin-bottom:1.5rem;display:flex;align-items:center;gap:.75rem;}
+    .logo-icon{width:38px;height:38px;background:linear-gradient(135deg,var(--primary),var(--primary-dark));border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;}
+    .logo-text{font-size:1.4rem;font-weight:700;}
+    .nav-links{list-style:none;padding:0 1rem;}
+    .nav-links a{display:flex;align-items:center;gap:.75rem;padding:.75rem 1rem;color:#9ca3af;border-radius:var(--radius-sm);font-weight:500;transition:var(--transition);}
+    .nav-links a:hover,.nav-links a.active{background:rgba(59,130,246,.15);color:#fff;}
+    .nav-links i{width:20px;text-align:center;}
+    .sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:999;}
+    @media(max-width:768px){.sidebar{transform:translateX(-100%);}.sidebar.active{transform:translateX(0);}.sidebar.active~.sidebar-overlay{display:block;}}
+    
+    /* ---------- MAIN AREA ---------- */
+    .main{margin-left:280px;padding:1.5rem 2rem;transition:var(--transition);width:100%;max-width:none;}
+    @media(max-width:768px){.main{margin-left:0;padding:1rem;}}
+    .inner{max-width:1600px;margin:0 auto;width:100%;}
+
+    .mobile-header{display:none;background:#fff;padding:1rem 1.5rem;box-shadow:var(--shadow-sm);align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10;}
+    @media(max-width:768px){.mobile-header{display:flex;}}
+    .mobile-menu-btn{background:none;border:none;font-size:1.5rem;color:var(--text);cursor:pointer;}
+
+    .page-title{font-size:1.75rem;font-weight:700;margin-bottom:1.5rem;display:flex;align-items:center;gap:.5rem;}
+
+    .settings-container{display:grid;grid-template-columns:260px 1fr;gap:2rem;width:100%;}
+    @media(max-width:992px){.settings-container{grid-template-columns:1fr;}}
+    .settings-nav{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:1rem;height:fit-content;width:100%;}
+    .settings-nav a{display:flex;align-items:center;gap:.75rem;padding:.75rem 1rem;border-radius:var(--radius-sm);color:var(--text-muted);font-weight:500;transition:var(--transition);}
+    .settings-nav a:hover,.settings-nav a.active{background:var(--primary-light);color:var(--primary);}
+    .settings-content{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:2rem;position:relative;width:100%;}
+    .tab-content{display:none;}
+    .tab-content.active{display:block;}
+
+    .setting-group{margin-bottom:2.5rem;width:100%;}
+    .setting-title{font-size:1.15rem;font-weight:600;margin-bottom:1rem;display:flex;align-items:center;gap:.5rem;color:var(--primary);}
+    .form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1rem;width:100%;}
+    .form-group{position:relative;width:100%;}
+    .form-label{position:absolute;top:0.75rem;left:1rem;font-size:0.875rem;color:var(--text-muted);pointer-events:none;transition:var(--transition);}
+    .form-control{width:100%;padding:0.75rem 1rem;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-size:0.95rem;background:white;transition:var(--transition);}
+    .form-control:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(59,130,246,.15);}
+    .form-control:focus+.form-label,.form-control:not(:placeholder-shown)+.form-label{top:-0.5rem;left:0.75rem;font-size:0.75rem;background:white;padding:0 .25rem;color:var(--primary);}
+
+    .btn{padding:.75rem 1.5rem;border:none;border-radius:var(--radius-sm);font-weight:600;font-size:.9rem;cursor:pointer;display:inline-flex;align-items:center;gap:.5rem;transition:var(--transition);}
+    .btn-primary{background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:#fff;}
+    .btn-primary:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(59,130,246,.3);}
+    .btn-success{background:linear-gradient(135deg,var(--success),#059669);color:#fff;}
+    .btn-success:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(16,185,129,.3);}
+    .btn-outline{background:transparent;color:var(--primary);border:1.5px solid var(--primary);}
+    .btn-outline:hover{background:var(--primary-light);}
+
+    .logo-preview{margin-top:.5rem;width:120px;height:120px;border-radius:var(--radius-sm);object-fit:contain;background:#f1f5f9;display:flex;align-items:center;justify-content:center;overflow:hidden;border:1px dashed var(--border);}
+    .logo-preview img{width:100%;height:100%;object-fit:contain;}
+
+    .color-swatch{width:36px;height:36px;border-radius:8px;cursor:pointer;border:2px solid var(--border);transition:var(--transition);}
+    .color-swatch:hover{border-color:var(--primary);}
+
+    .toast{position:fixed;top:1.5rem;right:1.5rem;background:#fff;border-radius:var(--radius);box-shadow:var(--shadow-lg);padding:1rem 1.25rem;display:flex;align-items:center;gap:.75rem;z-index:3000;transform:translateX(400px);transition:transform .3s ease;border-left:4px solid var(--success);max-width:320px;}
+    .toast.show{transform:translateX(0);}
+    .toast.success{border-left-color:var(--success);}
+    .toast-icon{font-size:1.1rem;}
+    .toast-message{font-weight:500;font-size:.9rem;}
+    .close-toast{background:none;border:none;font-size:1.1rem;cursor:pointer;color:var(--text-muted);margin-left:auto;}
+
+    /* Dark mode */
+    body.dark{--bg:#111827;--card:#1f2937;--text:#f9fafb;--text-muted:#9ca3af;--border:#374151;}
+    .dark .settings-nav,.dark .settings-content{background:var(--card);border-color:var(--border);}
+    .dark .form-control{background:var(--card);color:var(--text);border-color:var(--border);}
+    .dark .logo-preview{background:#374151;border-color:#4b5563;}
+  </style>
+</head>
+<body>
+
+<div class="app">
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <div class="logo"><div class="logo-icon"><i class="fas fa-file-invoice"></i></div><div class="logo-text">InvoGen</div></div>
+    <ul class="nav-links">
+      <li><a href="{% url 'dashboard' %}"><i class="fas fa-chart-bar"></i> Dashboard</a></li>
+      <li><a href="{% url 'invoice' %}"><i class="fas fa-receipt"></i> Invoices</a></li>
+      <li><a href="{% url 'customer' %}"><i class="fas fa-users"></i> Customers</a></li>
+      <li><a href="{% url 'report' %}"><i class="fas fa-chart-line"></i> Reports</a></li>
+      <li><a href="{% url 'setting' %}" class="active"><i class="fas fa-cog"></i> Settings</a></li>
+    </ul>
+  </aside>
+  <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+  <!-- Main -->
+  <main class="main">
+    <div class="inner">
+      <header class="mobile-header">
+        <button class="mobile-menu-btn" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+        <h1 class="page-title">Settings</h1>
+        <div></div>
+      </header>
+
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;">
+        <h1 class="page-title"><i class="fas fa-cog"></i> Settings</h1>
+        <button class="btn btn-primary" onclick="toggleDarkMode()"><i class="fas fa-moon"></i> Dark Mode</button>
+      </div>
+
+      <div class="settings-container">
+        <nav class="settings-nav">
+          <a href="#" class="active" data-tab="general"><i class="fas fa-cog"></i> General</a>
+          <a href="#" data-tab="company"><i class="fas fa-building"></i> Company</a>
+          <a href="#" data-tab="branding"><i class="fas fa-palette"></i> Branding</a>
+          <a href="#" data-tab="invoice"><i class="fas fa-file-invoice"></i> Invoice</a>
+          <a href="#" data-tab="notifications"><i class="fas fa-bell"></i> Notifications</a>
+        </nav>
+
+        <section class="settings-content">
+          <!-- General -->
+          <div id="general" class="tab-content active">
+            <div class="setting-group">
+              <h3 class="setting-title"><i class="fas fa-globe"></i> Language & Region</h3>
+              <div class="form-grid">
+                <div class="form-group">
+                  <select class="form-control" id="lang"><option>English (US)</option><option>French</option></select>
+                  <label class="form-label">Language</label>
+                </div>
+                <div class="form-group">
+                  <select class="form-control" id="currency"><option>USD</option><option>EUR</option><option>GHS</option></select>
+                  <label class="form-label">Currency</label>
+                </div>
+              </div>
+            </div>
+            <button class="btn btn-primary" onclick="saveSection('general')">Save General Settings</button>
+          </div>
+
+          <!-- Company -->
+          <div id="company" class="tab-content">
+            <div class="setting-group">
+              <h3 class="setting-title"><i class="fas fa-building"></i> Company Details</h3>
+              <div class="form-grid">
+                <div class="form-group"><input type="text" class="form-control" placeholder=" " value="InvoGen Pro" id="compName"><label class="form-label">Company Name</label></div>
+                <div class="form-group"><input type="email" class="form-control" placeholder=" " value="hello@invogen.com" id="compEmail"><label class="form-label">Email</label></div>
+                <div class="form-group"><input type="text" class="form-control" placeholder=" " value="+1 555 000 1234" id="compPhone"><label class="form-label">Phone</label></div>
+                <div class="form-group"><input type="text" class="form-control" placeholder=" " value="US123456789" id="compTax"><label class="form-label">Tax ID</label></div>
+                <div class="form-group" style="grid-column:span 2;"><textarea class="form-control" rows="3" placeholder=" " id="compAddr">123 Business Ave, Suite 100, New York, NY 10001</textarea><label class="form-label">Address</label></div>
+              </div>
+            </div>
+            <button class="btn btn-primary" onclick="saveSection('company')">Update Company</button>
+          </div>
+
+          <!-- Branding -->
+          <div id="branding" class="tab-content">
+            <div class="setting-group">
+              <h3 class="setting-title"><i class="fas fa-palette"></i> Brand Identity</h3>
+              <div class="form-grid">
+                <div class="form-group">
+                  <label class="form-label" style="position:static;margin-bottom:.5rem;">Logo</label>
+                  <input type="file" accept="image/*" id="logoInput" style="display:none;" onchange="previewLogo(event)">
+                  <button class="btn btn-outline" onclick="document.getElementById('logoInput').click()"><i class="fas fa-upload"></i> Upload Logo</button>
+                  <div class="logo-preview" id="logoPreview"><i class="fas fa-image" style="font-size:2rem;color:#9ca3af;"></i></div>
+                </div>
+                <div class="form-group">
+                  <label class="form-label" style="position:static;margin-bottom:.5rem;">Primary Color</label>
+                  <div class="color-swatch" id="colorSwatch" style="background:#3b82f6;"></div>
+                </div>
+              </div>
+            </div>
+            <button class="btn btn-primary" onclick="saveSection('branding')">Apply Branding</button>
+          </div>
+
+          <!-- Invoice -->
+          <div id="invoice" class="tab-content">
+            <div class="setting-group">
+              <h3 class="setting-title"><i class="fas fa-file-invoice"></i> Invoice Defaults</h3>
+              <div class="form-grid">
+                <div class="form-group"><input type="text" class="form-control" placeholder=" " value="INV-{{year}}-{{number}}" id="invPrefix"><label class="form-label">Invoice Prefix</label></div>
+                <div class="form-group"><input type="number" class="form-control" placeholder=" " value="30" id="invDue"><label class="form-label">Due in (days)</label></div>
+                <div class="form-group">
+                  <select class="form-control" id="invTemplate"><option>Modern (Default)</option><option>Minimal</option><option>Corporate</option></select>
+                  <label class="form-label">Template</label>
+                </div>
+              </div>
+            </div>
+            <button class="btn btn-primary" onclick="saveSection('invoice')">Save Invoice Settings</button>
+          </div>
+
+          <!-- Notifications -->
+          <div id="notifications" class="tab-content">
+            <div class="setting-group">
+              <h3 class="setting-title"><i class="fas fa-bell"></i> Email Notifications</h3>
+              <label style="display:block;margin-bottom:.75rem;"><input type="checkbox" checked> Send invoice when created</label>
+              <label style="display:block;margin-bottom:.75rem;"><input type="checkbox" checked> Remind 3 days before due</label>
+              <label style="display:block;margin-bottom:.75rem;"><input type="checkbox"> Notify on payment received</label>
+            </div>
+            <button class="btn btn-primary" onclick="saveSection('notifications')">Save Notifications</button>
+          </div>
+        </section>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"><div class="toast-icon"><i class="fas fa-check-circle"></i></div><div class="toast-message" id="toastMessage"></div><button class="close-toast" onclick="hideToast()">x</button></div>
+
+<script>
+/* ---------- Toast ---------- */
+function showToast(msg,type='success'){const t=document.getElementById('toast'),m=document.getElementById('toastMessage');m.textContent=msg;t.className=`toast ${type} show`;setTimeout(hideToast,4000);}
+function hideToast(){document.getElementById('toast').classList.remove('show');}
+
+/* ---------- Dark Mode ---------- */
+function toggleDarkMode(){document.body.classList.toggle('dark');localStorage.setItem('dark',document.body.classList.contains('dark'));}
+if(localStorage.getItem('dark')==='true') document.body.classList.add('dark');
+
+/* ---------- Tabs ---------- */
+document.querySelectorAll('.settings-nav a').forEach(l=>{l.addEventListener('click',e=>{e.preventDefault();document.querySelectorAll('.settings-nav a').forEach(a=>a.classList.remove('active'));document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));l.classList.add('active');document.getElementById(l.dataset.tab).classList.add('active');});});
+
+/* ---------- Logo Preview ---------- */
+function previewLogo(e){const file=e.target.files[0];if(!file) return;const reader=new FileReader();reader.onload=r=>{document.getElementById('logoPreview').innerHTML=`<img src="${r.target.result}" alt="Logo">`;};reader.readAsDataURL(file);}
+
+/* ---------- Color Picker ---------- */
+const pickr = Pickr.create({
+  el: '#colorSwatch', theme: 'nano', default: '#3b82f6',
+  components: {preview:true,hue:true,interaction:{input:true,save:true}},
+  swatches: ['#3b82f6','#10b981','#f59e0b','#ef4444']
+});
+pickr.on('save',color=>{document.documentElement.style.setProperty('--primary',color.toHEXA().toString());pickr.setColor(color.toHEXA().toString());});
+
+/* ---------- Save ---------- */
+function saveSection(section){showToast(`${section.charAt(0).toUpperCase()+section.slice(1)} settings saved!`,'success');}
+
+/* ---------- Sidebar ---------- */
+function toggleSidebar(){document.getElementById('sidebar').classList.toggle('active');}
+
+/* ---------- Init ---------- */
+document.addEventListener('DOMContentLoaded',()=>{showToast('Settings panel ready','success');});
+</script>
+</body>
+</html>
