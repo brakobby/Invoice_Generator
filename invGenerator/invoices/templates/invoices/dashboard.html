@@ -609,16 +609,27 @@
         <h1 class="header-title" style="margin: 0;">Dashboard Overview</h1>
         <div class="header-actions">
           <div class="user-menu" id="userMenu">
-            <div class="user-avatar">KA</div>
-            <div class="user-info">
-              <div class="user-name">Korda Asare</div>
-              <div class="user-role">Admin</div>
-            </div>
-            <div class="user-dropdown" id="userDropdown">
-              <a href="#" class="dropdown-item"><i class="fas fa-user"></i> Profile</a>
-              <a href="#" class="dropdown-item"><i class="fas fa-cog"></i> Settings</a>
-              <a href="#" class="dropdown-item"><i class="fas fa-sign-out-alt"></i> Logout</a>
-            </div>
+            {% if request.session.user_id %}
+              <div class="user-avatar">
+                {{ request.session.user_name|first|upper }}{{ request.session.last_name|first|upper }}
+              </div>
+              <div class="user-info">
+                <div class="user-name">{{ request.session.user_name }} {{ request.session.last_name }}</div>
+                <div class="user-role">Admin</div>
+              </div>
+            {% else %}
+              <div class="user-avatar">G</div>
+              <div class="user-info">
+                <div class="user-name">Guest</div>
+                <div class="user-role">Not logged in</div>
+              </div>
+            {% endif %}
+          </div>
+
+          <div class="user-dropdown" id="userDropdown">
+            <a href="#" class="dropdown-item"><i class="fas fa-user"></i> Profile</a>
+            <a href="#" class="dropdown-item"><i class="fas fa-cog"></i> Settings</a>
+            <a href="" class="dropdown-item"><i class="fas fa-sign-out-alt"></i> Logout</a>
           </div>
         </div>
       </div>
@@ -628,22 +639,22 @@
         <div class="stat-card">
           <div class="stat-value">$24,850</div>
           <div class="stat-label">Total Revenue</div>
-          <div class="stat-trend trend-up">↑ 12.5% <span>vs last month</span></div>
+          <div class="stat-trend trend-up"><i class="fas fa-arrow-up"></i> 12.5% <span>vs last month</span></div>
         </div>
         <div class="stat-card revenue">
           <div class="stat-value">18</div>
           <div class="stat-label">Paid Invoices</div>
-          <div class="stat-trend trend-up">↑ 8.2% <span>vs last month</span></div>
+          <div class="stat-trend trend-up"><i class="fas fa-arrow-up"></i> 8.2% <span>vs last month</span></div>
         </div>
         <div class="stat-card pending">
           <div class="stat-value">7</div>
           <div class="stat-label">Pending</div>
-          <div class="stat-trend trend-down">↓ 3.1% <span>vs last month</span></div>
+          <div class="stat-trend trend-down"><i class="fas fa-arrow-down"></i> 3.1% <span>vs last month</span></div>
         </div>
         <div class="stat-card overdue">
           <div class="stat-value">2</div>
           <div class="stat-label">Overdue</div>
-          <div class="stat-trend trend-down">↓ 15.7% <span>vs last month</span></div>
+          <div class="stat-trend trend-down"><i class="fas fa-arrow-down"></i> 15.7% <span>vs last month</span></div>
         </div>
       </div>
 
@@ -651,8 +662,8 @@
       <div class="quick-actions">
         <h2 class="section-title">Quick Actions</h2>
         <div class="action-buttons">
-          <a href="create-invoice.html" class="btn btn-primary"><i class="fas fa-plus-circle"></i> New Invoice</a>
-          <a href="#" class="btn btn-success"><i class="fas fa-user-plus"></i> Add Customer</a>
+          <a href="{% url 'new_invoice' %}" class="btn btn-primary"><i class="fas fa-plus-circle"></i> New Invoice</a>
+          <a href="{% url 'customer' %}" class="btn btn-success"><i class="fas fa-user-plus"></i> Add Customer</a>
           <a href="#" class="btn btn-outline"><i class="fas fa-file-export"></i> Export</a>
         </div>
       </div>
@@ -684,7 +695,7 @@
           </thead>
           <tbody id="invoicesTableBody">
             <tr data-status="paid">
-              <td class="invoice-number">INV-2024-015</td>
+              <!-- <td class="invoice-number">INV-2024-015</td>
               <td class="invoice-client">Acme Corp</td>
               <td class="invoice-amount">$3,250</td>
               <td class="invoice-date">Feb 15</td>
@@ -692,10 +703,9 @@
               <td class="action-buttons-small">
                 <button class="btn-sm btn-view"><i class="fas fa-eye"></i></button>
                 <button class="btn-sm btn-edit"><i class="fas fa-edit"></i></button>
-                <button class="btn-sm btn-download"><i class="fas fa-download"></i></button>
+                <button class="btn-sm btn-download"><i class="fas fa-download"></i></button> -->
               </td>
             </tr>
-            <!-- More rows... -->
           </tbody>
         </table>
       </div>
@@ -706,7 +716,7 @@
   <div class="toast" id="toast">
     <div class="toast-icon"><i class="fas fa-check-circle"></i></div>
     <div class="toast-message" id="toastMessage">Success!</div>
-    <button class="close-toast" onclick="hideToast()">&times;</button>
+    <button class="close-toast" onclick="hideToast()">×</button>
   </div>
 
   <script>
@@ -714,7 +724,7 @@
       setupMobileMenu();
       setupUserDropdown();
       setupFilters();
-      showToast('Welcome back, Korda!', 'success');
+      showToast('Welcome back!', 'success');
     });
 
     function toggleSidebar() {
